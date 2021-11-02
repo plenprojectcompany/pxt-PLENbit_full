@@ -169,11 +169,12 @@ namespace plenxxx {
     //% weight=3 group="others"
     export function Power(state: PowerOnOff) {
         pins.digitalWritePin(DigitalPin.P1, state)
-        let pin = PinPullMode.PullUp
-        if (state == PowerOnOff.On) pin = PinPullMode.PullDown
-        pins.setPull(DigitalPin.P1, pin)
-
-        if (state == PowerOnOff.On) PLENStartInit()
-        else PLENEndInit()
+        if (state == PowerOnOff.On){
+            pins.setPull(DigitalPin.P1, PinPullMode.PullUp)
+            PLENStartInit()
+        }else{
+            pins.setPull(DigitalPin.P1, PinPullMode.PullDown)
+            PLENEndInit()
+        }
     }
 }
