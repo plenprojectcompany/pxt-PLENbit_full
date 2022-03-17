@@ -8,18 +8,19 @@
 namespace plenxxx {
 
     //グローバル変数==================================================================
-    export let servoInitArray: number[] = [0, 10, 0, -15, -10, -10, 20, -20, -15, -20, -10, 25, -30, 10, -15, 0, 0, -10]
-    const servoReverse = [true, true, false, true, false, true, true, false, true, false, false, true, false, true, false, false, true, false] //サーボ反転
+    export let servoInitArray: number[] = [0, 13, 0, -10, -10, -7, 20, -18, 15, -20, -10, 25, -30, 10, -20, -5, 5, 10]
+    const servoReverse = [true, true, false, true, false, true, true, false, false, false, false, true, false, true, false, false, true, true] //サーボ反転
     const servoCount = servoInitArray.length
-    let servoAngle: number[] = []
+    export let servoAngle: number[] = []
     for (let i = 0; i < servoCount; i++) servoAngle.push(0)
     let servoFreeArray: boolean[] = []
     for (let i = 0; i < servoCount; i++) servoFreeArray.push(true)
-    let servoAngleGoal: number[] = []
-    for (let i = 0; i < servoCount; i++) servoAngle.push(0)
-    const PCA9865Adr = 0x6A
-    const eepromAdr = 0x55
-    let servoInitAdr = 0
+    export let servoAngleGoal: number[] = []
+    for (let i = 0; i < servoCount; i++) servoAngleGoal.push(0)
+    const PCA9865Adr = 106
+    const eepromAdr1 = 0x54
+    const eepromAdr2 = 0x55
+    let servoInitAdr = 0 //初期位置調整アドレス
     let initEEPROMFlag = false
     let initPCA9865Flag = false
     let backgroundProcessFlag = false
@@ -28,49 +29,23 @@ namespace plenxxx {
     let autoPoweroffStartTime = -1
     let hardwareVersion = parseInt(control.hardwareVersion())
 
-    class EEPROM {
-        head: number
-        end: number
-        constructor(head: number, end: number) {
-            this.head = head
-            this.end = end
-        }
-
-        AddData(num:number){
-
-        }
-
-        DeleteData(num: number) {
-
-        }
-    }
-
-    let motionDataEEPROM = new EEPROM(10, 20)
-
-
-    input.onButtonPressed(Button.A, function() {
-        WriteEEPROM(500,255)
-    })
-
-    input.onButtonPressed(Button.B, function () {
-
-        serial.writeValue("x", ReadEEPROM(500, 1).getNumber(NumberFormat.UInt8LE,0))
-    })
-
     //初期動作==================================================================
-    // PLEN起動
+    //PLEN起動
     Power(true)
 
+    //サーボ初期位置
+    //LinearServoMoving(500)
+    //ServoFree(-1)
 
     //関数==================================================================
-    function BackgroundProcess(){ // バックグラウンド処理
+    function BackgroundProcess() { // バックグラウンド処理
         if (backgroundProcessFlag) return 0
         backgroundProcessFlag = true
 
         control.inBackground(function () {
             while (true) {
                 basic.pause(60000) // 毎分確認
-                if (control.millis() - autoPoweroffStartTime >= autoPoweroffTimeSet * 60000 && autoPoweroffTimeSet > 0 && autoPoweroffStartTime > 0) {
+                if (input.runningTime() - autoPoweroffStartTime >= autoPoweroffTimeSet * 60000 && autoPoweroffTimeSet > 0 && autoPoweroffStartTime > 0) {
                     basic.showString("AUTO POWER OFF", 75)
                     plenxxx.Power(false) // オートパワーオフ
                 }
@@ -80,7 +55,7 @@ namespace plenxxx {
     }
 
     function PLENStartInit() { // 各種初期化（電源オン時の初期動作）
-        autoPoweroffStartTime = control.millis()
+        autoPoweroffStartTime = input.runningTime()
         LedEye(true)
         InitPCA9865()
         BackgroundProcess()
@@ -95,6 +70,24 @@ namespace plenxxx {
         autoPoweroffStartTime = -1
 
         basic.showIcon(IconNames.Asleep)
+    }
+
+    export function ArrayChunk(array: number[], size: number) { // 配列を指定サイズの連想配列に分ける
+        if (array.length <= size) return [array]
+
+        let result: number[][] = []
+
+        while (true) {
+            if (array.length <= size) {
+                result.push(array)
+                break
+            } else {
+                result.push(array.slice(0, size))
+                array.splice(0, size)
+            }
+        }
+
+        return result
     }
 
     export function InitPCA9865() { // PCA9685の初期設定
@@ -116,42 +109,51 @@ namespace plenxxx {
     }
 
     function WritePCA9865(addr: number, d: number) { // PCA9685に書く
-        let cmd = pins.createBuffer(2);
-        cmd[0] = addr;
-        cmd[1] = d;
-        pins.i2cWriteBuffer(PCA9865Adr, cmd, false);
+        let cmd = pins.createBuffer(2)
+        cmd[0] = addr
+        cmd[1] = d
+        pins.i2cWriteBuffer(PCA9865Adr, cmd, false)
     }
 
-    export function ReadEEPROM(eepAdr: number, num: number) { // EEPROMを読む
-        let data = pins.createBuffer(2);
-        data[0] = eepAdr >> 8;
-        data[1] = eepAdr & 0xFF;
+    export function ReadEEPROM(eepAdr: number, num: number, rom2 = false) {
+        let eepAddress = eepromAdr1
+        if (rom2) eepAddress = eepromAdr2
+        let data = pins.createBuffer(2)
+        data[0] = eepAdr >> 8
+        data[1] = eepAdr & 0xFF
         // need adr change code
-        pins.i2cWriteBuffer(eepromAdr, data);
-        return pins.i2cReadBuffer(eepromAdr, num, false);
+        pins.i2cWriteBuffer(eepAddress, data)
+        return pins.i2cReadBuffer(eepAddress, num, false)
     }
 
-    function WriteEEPROM(eepAdr: number, num: number) { // EEPROMに書く
-        let data = pins.createBuffer(3);
-        data[0] = eepAdr >> 8;
-        data[1] = eepAdr & 0xFF;
-        data[2] = num;
-        pins.i2cWriteBuffer(eepromAdr, data);
-        basic.pause(5)
+    export function WriteEEPROM(eepAdr: number, value: number[], rom2 = false) {
+        let eepAddress = eepromAdr1
+        if (rom2) eepAddress = eepromAdr2
+
+        let value256 = ArrayChunk(value, 256)
+        for (let dataChi of value256) { //　一度に書き込めるのは最大256yte
+            let dataLen = dataChi.length
+            let data = pins.createBuffer(2 + dataLen)
+            data[0] = eepAdr >> 8
+            data[1] = eepAdr & 0xFF
+            for (let i = 0; i < dataLen;i++) {
+                data[2 + i] = dataChi[i] & 0xFF
+            }
+            pins.i2cWriteBuffer(eepAddress, data)
+            basic.pause(5)
+        }
     }
 
-    export function ServoControl(num: number, degrees: number, free:boolean) { // サーボ角を最短で変更する
+    export function ServoControl(num: number, degrees: number, free: boolean) { // サーボ角を最短で変更する
         if (initPCA9865Flag == false) InitPCA9865()
 
         degrees = Math.round(degrees)
-        if (degrees < -90) degrees = 90
-        if (degrees > 90) degrees = 90
 
         if (servoAngle[num] != degrees || servoFreeArray[num] != free) { // 角度変化の無いサーボは動かさない（脱力サーボは動かす）
             let msec = 0
             let pwm = 0
 
-            if (free == false){ // サーボフリーの場合、PWMは0
+            if (free == false) { // サーボフリーの場合、PWMは0
                 servoAngle[num] = degrees
                 servoFreeArray[num] = false
 
@@ -195,20 +197,25 @@ namespace plenxxx {
     }
 
     function LinearServoMoving(msec: number) { // サーボモーターを指定角度servoAngleGoal[]まで線形的に変更
+        if (msec < 10) msec = 10
+
         const startTime = input.runningTime()
         let startAngle: number[] = []
         let step: number[] = []
         for (let i = 0; i < servoCount; i++) {
+            if (isNaN(servoAngle[i])) servoAngle[i] = 0
             const angle = servoAngle[i]
             startAngle.push(angle)
             step.push((servoAngleGoal[i] - angle) / msec)
         }
 
         let loop = true
+
         while (loop) {
             const deltaTime = input.runningTime() - startTime
+
             for (let i = 0; i < servoCount; i++) {
-                ServoControl(i, startAngle[i] + step[i] * deltaTime,false)
+                ServoControl(i, startAngle[i] + step[i] * deltaTime, false)
                 if (deltaTime >= msec) {
                     loop = false
                     break
@@ -230,7 +237,7 @@ namespace plenxxx {
     //% ms.fieldEditor="numberdropdown" ms.fieldOptions.decompileLiterals=true
     //% ms.fieldOptions.data='[["100 ms", 100], ["200 ms", 200], ["500 ms", 500], ["1 second", 1000], ["2 seconds", 2000], ["5 seconds", 5000]]'
     export function ServoTimePicker(ms: number): number {
-        return ms;
+        return ms
     }
 
     /**
@@ -243,7 +250,7 @@ namespace plenxxx {
     //% min.fieldEditor="numberdropdown" min.fieldOptions.decompileLiterals=true
     //% min.fieldOptions.data='[["deactivate", -1], ["5 minutes", 5], ["10 minutes", 10], ["15 minutes", 15], ["30 minutes", 30], ["1 hour", 60]]'
     export function autopoweroffTimePicker(min: number): number {
-        return min;
+        return min
     }
 
     /**
@@ -256,7 +263,7 @@ namespace plenxxx {
     //% num.fieldEditor="numberdropdown" num.fieldOptions.decompileLiterals=true
     //% num.fieldOptions.data='[["0：L shoulder", 0], ["1：L groin", 1], ["2：L arm", 2], ["3：L hand", 3], ["4：L leg", 4], ["5：L lap", 5], ["6：L knee", 6], ["7：L shin", 7], ["8：L foot", 8],["9：R shoulder", 9], ["10：R groin", 10], ["11：R arm", 11], ["12：R hand", 12], ["13：R leg", 13], ["14：R lap", 14], ["15：R knee", 15], ["16：R shin", 16], ["17：R foot", 17]]'
     export function servoNumberPicker(num: number): number {
-        return num;
+        return num
     }
 
     /**
@@ -269,7 +276,7 @@ namespace plenxxx {
     //% num.fieldEditor="numberdropdown" num.fieldOptions.decompileLiterals=true
     //% num.fieldOptions.data='[["All", -1], ["0：L shoulder", 0], ["1：L groin", 1], ["2：L arm", 2], ["3：L hand", 3], ["4：L leg", 4], ["5：L lap", 5], ["6：L knee", 6], ["7：L shin", 7], ["8：L foot", 8],["9：R shoulder", 9], ["10：R groin", 10], ["11：R arm", 11], ["12：R hand", 12], ["13：R leg", 13], ["14：R lap", 14], ["15：R knee", 15], ["16：R shin", 16], ["17：R foot", 17]]'
     export function servofreeNumberPicker(num: number): number {
-        return num;
+        return num
     }
 
     //メイン==================================================================
@@ -296,7 +303,7 @@ namespace plenxxx {
     export function LedEye(flag: boolean) {
         let state = 1
         if (flag) state = 0
-        pins.digitalWritePin(DigitalPin.P16, state);
+        pins.digitalWritePin(DigitalPin.P16, state)
     }
 
     //サーボ==================================================================
@@ -423,7 +430,7 @@ namespace plenxxx {
     //% weight=8 group="Servo"
     //% subcategory="Advanced"
     export function ServoWrite(num: number, degrees: number) {
-        ServoControl(num, degrees,false)
+        ServoControl(num, degrees, false)
         servoAngleGoal[num] = degrees
     }
 
@@ -436,11 +443,11 @@ namespace plenxxx {
     //% num.shadow="PLEN:xxx_picker_servofreeNumber"
     //% weight=4 group="Servo"
     //% subcategory="Advanced"
-    export function ServoFree(num:number) {
-        if(num >= 0){
-            ServoControl(num,0,true)
+    export function ServoFree(num: number) {
+        if (num >= 0) {
+            ServoControl(num, 0, true)
             servoFreeArray[num] = true
-        }else{
+        } else {
             // 全サーボをフリーにする
             WritePCA9865(0xFA, 0x00) // ALL_LED_ON_L　全PWMのONのタイミングを0にする
             WritePCA9865(0xFB, 0x00) // ALL_LED_ON_H　　　　　　　〃
@@ -492,9 +499,25 @@ namespace plenxxx {
     //% block="set the initial position of servo motor %num to %degrees degrees"
     //% weight=2
     //% subcategory="Servo Adjust"
-    export function SaveServoInit(num: number,degrees:number) {
-        if (num >= 0 && num < 18){
-            WriteEEPROM(servoInitAdr + num, degrees)
+    export function SetServoInit(num: number, degrees: number) {
+        let servoInit = ReadEEPROM(servoInitAdr, 18)
+
+        let mBuf = ReadEEPROM(0x32, 5000)
+        for (let i = 0; i < 5000; i++) {
+            let bufr = pins.createBuffer(16)
+            //bufr = mBuf[i]
+            //serial.writeValue("x", mBuf[i].createBuffer(16).getNumber(NumberFormat.UInt8LE, 0))
         }
+    }
+
+    /**
+   * Save the servo initial position to the EEPROM.
+   */
+    //% blockId="PLEN:xxx_servoadjust_save"
+    //% block="set the initial position of servo motor %num to %degrees degrees"
+    //% weight=2
+    //% subcategory="Servo Adjust"
+    export function SaveServoInit(degrees: number[]) {
+        WriteEEPROM(servoInitAdr, degrees)
     }
 }
