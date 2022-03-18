@@ -115,7 +115,7 @@ namespace plenxxx {
         pins.i2cWriteBuffer(PCA9865Adr, cmd, false)
     }
 
-    export function ReadEEPROM(eepAdr: number, num: number, rom2 = false) {
+    export function ReadEEPROM(eepAdr: number, size: number, rom2 = false) {
         let eepAddress = eepromAdr1
         if (rom2) eepAddress = eepromAdr2
         let data = pins.createBuffer(2)
@@ -123,7 +123,7 @@ namespace plenxxx {
         data[1] = eepAdr & 0xFF
         // need adr change code
         pins.i2cWriteBuffer(eepAddress, data)
-        return pins.i2cReadBuffer(eepAddress, num, false)
+        return pins.i2cReadBuffer(eepAddress, size, false)
     }
 
     export function WriteEEPROM(eepAdr: number, value: number[], rom2 = false) {
@@ -136,7 +136,7 @@ namespace plenxxx {
             let data = pins.createBuffer(2 + dataLen)
             data[0] = eepAdr >> 8
             data[1] = eepAdr & 0xFF
-            for (let i = 0; i < dataLen;i++) {
+            for (let i = 0; i < dataLen; i++) {
                 data[2 + i] = dataChi[i] & 0xFF
             }
             pins.i2cWriteBuffer(eepAddress, data)
@@ -222,6 +222,41 @@ namespace plenxxx {
                 }
             }
         }
+    }
+
+    function DoMotion(motionNumber:number){
+        if (motionNumber < 0) return -1
+        if (motionNumber >= 256) return -1
+        let flameList = ReadEEPROM(256, motionNumber + 1,true)
+        let motionAdr = 512
+        for (let i = 0; i < motionNumber - 1; i++) motionAdr += flameList[i] * 22
+
+        let motionFlame = flameList[flameList.length - 1]
+
+
+        for (let f = 0; f < motionFlame;f++){
+            let motionData = ReadEEPROM(motionAdr + 22 * f, 22, true)
+
+            let motionId = motionData[0] & 0xFF
+            let motionFlame = motionData[1] & 0xFF
+            let motionTime = (motionData[2] & 0xFF) << 8 | (motionData[3] & 0xFF)
+            let motionAnglesBuffer = motionData.slice(4, -1)
+            let motionAngles = []
+
+            for (let i = 0; i<motionAnglesBuffer.length;i++){
+                let angle = motionAnglesBuffer[i]
+                if (angle > 127)angle = -1 * ((~angle & 0xFF) + 1)
+                motionAngles.push(angle)
+            }
+
+            if(motionId == motionNumber && motionFlame == f){
+                servoAngleGoal = motionAngles.slice(0,18)
+                LinearServoMoving(motionTime)
+            }else{
+                return 0
+            }
+        }
+        return 1
     }
 
     //PLEN:xxxブロック==================================================================
@@ -418,6 +453,20 @@ namespace plenxxx {
     }
 
     //発展==================================================================
+    /**
+   * Play the Motion on PLEN:bit.
+   * You can check the list of Motion Number at GitHub.
+   * @param motionNumber https://github.com/plenprojectcompany/pxt-PLENbit/PLENbit_Motion.pdf
+   */
+    //% blockId=PLEN:bit_motion
+    //% block="play motion %fileName"
+    //% motionNumber.min=0 motionNumber.max=255 motionNumber.defl=0
+    //% weight=10 group="Servo" advanced=true
+    export function motion(motionNumber: number) {
+        DoMotion(motionNumber)
+        ServoFree(-1)
+    }
+
     /**
    * Controll the each servo motors. The servo will move max speed.
    * @param speed 0 ~ 50, The larger this value, the faster.
