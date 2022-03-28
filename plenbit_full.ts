@@ -372,8 +372,6 @@ namespace plenbit_full {
                     initAngles.shift()
                     for (let i = 0; i < servoCount; i++) servoInitArray[i] = initAngles[i]
                 }
-            }else{
-                basic.showIcon(IconNames.No)
             }
         }
     }
