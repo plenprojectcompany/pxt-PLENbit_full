@@ -4,7 +4,7 @@
  * Blocks for PLEN:xxx
  */
 //% weight=999 color=#00A654 icon="\uf0a0" block="PLEN:xxx"
-//% groups=['Motion','LED', 'Move', 'Left Servo Positions', 'Right Servo Positions', 'Servo', 'Power', 'Motion Data', 'Servo Adjust']
+//% groups=['Motion','LED', 'Move', 'Left Servo Positions', 'Right Servo Positions', 'Servo', 'Original Motion','Power', 'Motion Data', 'Servo Adjust']
 namespace plenxxx {
 
     //グローバル変数==================================================================
@@ -24,16 +24,17 @@ namespace plenxxx {
     let initPCA9865Flag = false
     let backgroundProcessFlag = false
     let autoPoweroffFlag = true
-    let autoPoweroffTimeSet = 30 //min　（マイナス指定で無効）
-    let autoPoweroffStartTime = -1
+    let startUpTime = -1 // 起動時間
+    let autoPoweroffTime = 1800000 //msec オートパワーオフするまでの時間
     let hardwareVersion = parseInt(control.hardwareVersion())
-    let continueMotionNumber = [0, 10, 11, 14, 15, 20, 21] // 連続再生用
+    let continueMotionNumber = [0, 10, 11, 14, 15, 16, 17, 20, 21] // 連続再生用
     let continueMotionTime = 0
     let continueMotionAngles: number[] = []
     for (let i = 0; i < servoCount; i++) continueMotionAngles.push(0)
+    let movingFlag = false // サーボ角度変更中？
     let playingMotionNumber = -1 // 再生中のモーション番号
+    let motionSpeed = 100
     let recordingFlag = -1
-    let recordingFlame = -1
 
     //初期動作==================================================================
     //PLEN起動
@@ -45,27 +46,43 @@ namespace plenxxx {
         backgroundProcessFlag = true
 
         control.inBackground(function () {
+            let playingMotionNumberCheck = -1
             while (true) {
-                basic.pause(60000) // 毎分確認
-                if (input.runningTime() - autoPoweroffStartTime >= autoPoweroffTimeSet * 60000 && autoPoweroffTimeSet > 0 && autoPoweroffStartTime > 0) {
-                    basic.showString("AUTO POWER OFF", 75)
-                    plenxxx.Power(false) // オートパワーオフ
+                basic.pause(20) // 20ミリ秒おきに確認
+                if (movingFlag) continue
+
+                if (autoPoweroffTime > 0) {
+                    let nowTime = input.runningTime()
+                    if (autoPoweroffTime != -1) {
+                        if (nowTime - startUpTime > autoPoweroffTime) {
+                            basic.showString("AUTO POWER OFF", 75)
+                            plenxxx.Power(false) // オートパワーオフ
+                            break
+                        }
+                    }
+                }
+
+                if (playingMotionNumber != playingMotionNumberCheck) {
+                    if (playingMotionNumber != -1) {
+                        LinearServoMoving(continueMotionTime)
+                        pause(100)
+                        ServoFree(-1)
+                        playingMotionNumber = -1
+                    }
+                    playingMotionNumberCheck = playingMotionNumber
                 }
             }
         })
+
+        backgroundProcessFlag = false
         return 1
     }
 
     function PLENStartInit() { // 各種初期化（電源オン時の初期動作）
-        basic.showIcon(IconNames.Happy)
+        basic.showIcon(IconNames.Happy, 0)
 
-        // 初期位置反映
-        let array = LoadServoInit()
-        for (let i = 0; i < servoCount; i++) servoInitArray[i] = array[i]
-
-        autoPoweroffStartTime = input.runningTime()
-        LedEye(true)
-        InitPCA9865()
+        // オートパワーオフ
+        startUpTime = input.runningTime()
         BackgroundProcess()
 
         //サーボ初期位置
@@ -73,27 +90,30 @@ namespace plenxxx {
         pause(100)
         ServoFree(-1)
 
+        LedEye(100)
         basic.clearScreen()
     }
 
     function PLENEndInit() { // 各種初期化（電源オフ時の初期化）
-        LedEye(false)
+        LedEye(0)
         initPCA9865Flag = false
-        autoPoweroffStartTime = -1
+        startUpTime = -1
 
-        basic.showIcon(IconNames.Asleep)
+        basic.showIcon(IconNames.Asleep, 0)
     }
 
     export function InitPCA9865() { // PCA9685の初期設定
-        if (ReadPCA9865(0xFE) != 0x00) { // PRE_SCALEが読み取れる <=> PCA9865が接続済み
-            initPCA9865Flag = true
-            WritePCA9865(0x00, 0x10) // Sleep modeをONにして、内部クロックを停止
-            WritePCA9865(0xFE, 0x85) // PRE_SCALEを設定　※ cf.P13 Writes to PRE_SCALE register are blocked when SLEEP xxx is logic 0 (MODE 1)
-            WritePCA9865(0x00, 0x00) // Sleep modeをOFFにして、内部クロックをPRE_SCALEで動かす
+        if (!initPCA9865Flag) {
+            if (ReadPCA9865(0xFE) != 0x00) { // PRE_SCALEが読み取れる <=> PCA9865が接続済み
+                initPCA9865Flag = true
+                WritePCA9865(0x00, 0x10) // Sleep modeをONにして、内部クロックを停止
+                WritePCA9865(0xFE, 0x85) // PRE_SCALEを設定　※ cf.P13 Writes to PRE_SCALE register are blocked when SLEEP xxx is logic 0 (MODE 1)
+                WritePCA9865(0x00, 0x00) // Sleep modeをOFFにして、内部クロックをPRE_SCALEで動かす
 
-            pins.analogSetPeriod(AnalogPin.P2, 20000)
-            pins.analogSetPeriod(AnalogPin.P8, 20000)
-            ServoFree(-1)
+                pins.analogSetPeriod(AnalogPin.P2, 20000)
+                pins.analogSetPeriod(AnalogPin.P8, 20000)
+                ServoFree(-1)
+            }
         }
     }
 
@@ -126,15 +146,15 @@ namespace plenxxx {
 
         let loopFlag = true
 
-        while (loopFlag){
+        while (loopFlag) {
             let maxWriteLen = 256 - eepAdr % 256 // 1page(256Byte)づつ書き込める
 
             let dataLen = 0
             let check = value.length
 
-            if (check > maxWriteLen){
+            if (check > maxWriteLen) {
                 dataLen = maxWriteLen
-            }else{
+            } else {
                 dataLen = check
                 loopFlag = false
             }
@@ -147,13 +167,14 @@ namespace plenxxx {
             }
             pins.i2cWriteBuffer(eepAddress, data)
             basic.pause(5)
-            eepAdr+=dataLen
-            value.splice(0,dataLen)
+            eepAdr += dataLen
+            value.splice(0, dataLen)
         }
     }
 
     export function ServoControl(num: number, degrees: number, free = false) { // サーボ角を最短で変更する
-        if (initPCA9865Flag == false) InitPCA9865()
+        InitEEPROM()
+        InitPCA9865()
 
         degrees = Math.round(degrees)
 
@@ -202,17 +223,23 @@ namespace plenxxx {
     }
 
     function LinearServoMoving(msec: number) { // サーボモーターを指定角度servoAngleGoal[]まで線形的に変更
+        movingFlag = true
         if (msec < 20) msec = 20
+        const startTime = input.runningTime()
 
-        if (recordingFlag>=0){
-            if (recordingFlame >= -1 && recordingFlame<22){
-                recordingFlame++
-                let motionAdr = (56 + recordingFlag * 2) * 256 + 1
-                WriteEEPROM(motionAdr + recordingFlame * 22, [recordingFlag, recordingFlame,(msec>>8)&0xFF,msec&0xFF].concat(servoAngleGoal))
+        if (recordingFlag >= 0) {
+            let motionAdr = (56 + recordingFlag * 2) * 256
+            let recordingFlame = ReadEEPROM(motionAdr, 1)[0]
+
+            if (recordingFlame < 23) {
+                led.plotBarGraph(recordingFlame, 23)
+                WriteEEPROM(motionAdr, [recordingFlame + 1])
+                WriteEEPROM(motionAdr + 1 + recordingFlame * 22, [recordingFlag, recordingFlame, (msec >> 8) & 0xFF, msec & 0xFF].concat(servoAngleGoal))
+            } else {
+                basic.showIcon(IconNames.No, 0)
             }
         }
 
-        const startTime = input.runningTime()
         let startAngle: number[] = []
         let step: number[] = []
         for (let i = 0; i < servoCount; i++) {
@@ -235,13 +262,14 @@ namespace plenxxx {
                 }
             }
         }
+        movingFlag = false
     }
 
-    function DoMotion(motionNumber: number, defaultMotion=true) {
-        if (defaultMotion){
+    function DoMotion(motionNumber: number, defaultMotion = true) {
+        if (defaultMotion) {
             if (motionNumber < 0) return -1
             if (motionNumber >= 256) return -1
-        }else{
+        } else {
             if (motionNumber < 0) return -1
             if (motionNumber >= 100) return -1
         }
@@ -258,7 +286,7 @@ namespace plenxxx {
         }
 
         let continueMotion = false // 連続歩行用
-        if(defaultMotion) if (continueMotionNumber.indexOf(motionNumber) != -1) continueMotion = true
+        if (defaultMotion) if (continueMotionNumber.indexOf(motionNumber) != -1) continueMotion = true
 
         let motionFlame = 0
         let motionAdr = 0
@@ -278,9 +306,11 @@ namespace plenxxx {
         } else {
             motionAdr = (56 + motionNumber * 2) * 256
             motionFlame = ReadEEPROM(motionAdr, 1)[0]
-            if (motionFlame > 23) motionFlame=0
+            if (motionFlame > 23) motionFlame = 0
             motionAdr++
         }
+
+        if (motionSpeed <= 0) return 0
 
         for (let f = 0; f < motionFlame; f++) {
             if (continueMotion && f == 0) f = 1
@@ -289,6 +319,7 @@ namespace plenxxx {
             let playMotionId = motionData[0] & 0xFF
             let playMotionFlame = motionData[1] & 0xFF
             let playMotionTime = (motionData[2] & 0xFF) << 8 | (motionData[3] & 0xFF)
+            playMotionTime /= motionSpeed / 100
             let playMotionAnglesBuffer = motionData.slice(4, -1)
             let playMotionAngles = []
 
@@ -304,28 +335,45 @@ namespace plenxxx {
                 if (continueMotion && motionFlame - 1 == f) {
                     for (let i = 0; i < servoCount; i++) continueMotionAngles[i] = servoAngleGoal[i]
                     continueMotionTime = playMotionTime
-                    control.inBackground(function () {
-                        if (playingMotionNumber != -1) {
-                            for (let i = 0; i < servoCount; i++) servoAngleGoal[i] = continueMotionAngles[i]
-                            LinearServoMoving(continueMotionTime)
-                            pause(100)
-                            ServoFree(-1)
-                            playingMotionNumber = -1
-                        }
-                    })
-                    return 1
+                } else {
+                    LinearServoMoving(playMotionTime)
                 }
-
-                LinearServoMoving(playMotionTime)
             } else {
                 playingMotionNumber = -1
                 return 0
             }
         }
-        pause(100)
-        ServoFree(-1)
-        playingMotionNumber = -1
+        if (!continueMotion) {
+            pause(100)
+            ServoFree(-1)
+            playingMotionNumber = -1
+        }
         return 1
+    }
+
+    // 初期位置データを取得
+    export function InitEEPROM() {
+        if (!initEEPROMFlag) {
+            if (Information(InformationData.Version)) {
+                initEEPROMFlag = true
+
+                let initDataBuffer = plenxxx.ReadEEPROM(0, servoCount + 1)
+                let initAngles = []
+                let count = 0
+                for (let i = 0; i < servoCount + 1; i++) {
+                    let angle = initDataBuffer[i]
+                    if (angle > 127) angle = -1 * ((~angle & 0xFF) + 1)
+                    initAngles.push(angle)
+                    if (angle == 0) count++
+                }
+
+                if (initAngles[0] == 1) {
+                    // 初期位置調整済み
+                    initAngles.shift()
+                    for (let i = 0; i < servoCount; i++) servoInitArray[i] = initAngles[i]
+                }
+            }
+        }
     }
 
     //PLEN:xxxブロック==================================================================
@@ -418,7 +466,7 @@ namespace plenxxx {
     //% blockHidden=true shim=TD_ID
     //% colorSecondary="#FFFFFF"
     //% min.fieldEditor="numberdropdown" min.fieldOptions.decompileLiterals=true
-    //% min.fieldOptions.data='[["deactivate", -1], ["5 minutes", 5], ["10 minutes", 10], ["15 minutes", 15], ["30 minutes", 30], ["1 hour", 60]]'
+    //% min.fieldOptions.data='[["disable", -1], ["5 minutes", 5], ["10 minutes", 10], ["15 minutes", 15], ["30 minutes", 30], ["1 hour", 60]]'
     export function autopoweroffTimePicker(min: number): number {
         return min
     }
@@ -498,14 +546,13 @@ namespace plenxxx {
    * Switch the led eye of PLEN:xxx.
    */
     //% blockId="PLEN:xxx_led"
-    //% block="turn %flag the led eyes"
-    //% flag.defl=true
-    //% flag.shadow="toggleOnOff"
+    //% block="set led eyes brightness to %bright percent"
+    //% bright.min=0 bright.max=100 bright.defl=50
     //% weight=6 group="LED"
-    export function LedEye(flag: boolean) {
-        let state = 1
-        if (flag) state = 0
-        pins.digitalWritePin(DigitalPin.P16, state)
+    export function LedEye(bright: number) {
+        if (bright < 0) bright = 0
+        if (bright > 100) bright = 100
+        pins.analogWritePin(AnalogPin.P16, (100 - bright) * 10.23)
     }
 
     //サーボ==================================================================
@@ -533,7 +580,7 @@ namespace plenxxx {
     //% weight=9 group="Move"
     //% subcategory="Servo"
     export function ServoMoveInit(msec: number) {
-        for(let i = 0;i<servoCount;i++) servoAngleGoal[i] = 0
+        for (let i = 0; i < servoCount; i++) servoAngleGoal[i] = 0
         LinearServoMoving(msec)
     }
 
@@ -642,15 +689,26 @@ namespace plenxxx {
     //% blockId=PLEN:xxx_motion_play
     //% block="play motion %fileName"
     //% motionNumber.min=0 motionNumber.max=255 motionNumber.defl=0
-    //% weight=10 group="Servo"
-    //% subcategory="Advanced"
+    //% weight=11 group="Servo"
+    //% subcategory="more"
     export function PlayMotion(motionNumber: number) {
         DoMotion(motionNumber)
     }
 
     /**
+   * Change the playing speed of the PLEN:xxx motion.
+   */
+    //% blockId=PLEN:xxx_motion_speed
+    //% block="set motion speed to %speed percent"
+    //% speed.min=10 speed.max=300 speed.defl=100
+    //% weight=10 group="Servo"
+    //% subcategory="more"
+    export function SetMotionSpeed(speed: number) {
+        motionSpeed = speed
+    }
+
+    /**
    * Controll the each servo motors. The servo will move max speed.
-   * @param speed 0 ~ 50, The larger this value, the faster.
    */
     //% blockId="PLEN:xxx_servo"
     //% block="set the servo motor %num to %degrees degrees"
@@ -658,7 +716,7 @@ namespace plenxxx {
     //% num.shadow="PLEN:xxx_picker_servoNumber"
     //% degrees.min=-90 degrees.max=90 degrees.defl=0
     //% weight=9 group="Servo"
-    //% subcategory="Advanced"
+    //% subcategory="more"
     export function ServoWrite(num: number, degrees: number) {
         ServoControl(num, degrees)
         servoAngleGoal[num] = degrees
@@ -672,7 +730,7 @@ namespace plenxxx {
     //% num.defl=-1
     //% num.shadow="PLEN:xxx_picker_servofreeNumber"
     //% weight=8 group="Servo"
-    //% subcategory="Advanced"
+    //% subcategory="more"
     export function ServoFree(num: number) {
         if (num >= 0) {
             ServoControl(num, 0, true)
@@ -695,9 +753,10 @@ namespace plenxxx {
     //% block="recoding original motion %fileName"
     //% motionNumber.min=0 motionNumber.max=99 motionNumber.defl=0
     //% weight=7 group="Original Motion"
-    //% subcategory="Advanced"
+    //% subcategory="more"
     export function RecodingOriginalMotion(motionNumber: number) {
-        if (recordingFlag==-1){
+        if (recordingFlag == -1) {
+            basic.showString("R")
             if (motionNumber < 0 || motionNumber > 99) motionNumber = -1
             recordingFlag = motionNumber
 
@@ -708,18 +767,16 @@ namespace plenxxx {
 
     /**
    * Stop Recording the Original Motion on PLEN:xxx.
-   * @param motionNumber 0～99
    */
     //% blockId=PLEN:xxx_originalmotion_stop
     //% block="stop recoding"
     //% weight=6 group="Original Motion"
-    //% subcategory="Advanced"
+    //% subcategory="more"
     export function StopRecodingOriginalMotion() {
-        if (recordingFlag!=-1){
-            let motionAdr = (56 + recordingFlag * 2) * 256
-            WriteEEPROM(motionAdr, [recordingFlame+1])
-            recordingFlame = -1
+        if (recordingFlag != -1) {
+            basic.pause(100)
             recordingFlag = -1
+            basic.showIcon(IconNames.Yes)
         }
     }
 
@@ -731,9 +788,9 @@ namespace plenxxx {
     //% block="play original motion %fileName"
     //% motionNumber.min=0 motionNumber.max=99 motionNumber.defl=0
     //% weight=5 group="Original Motion"
-    //% subcategory="Advanced"
+    //% subcategory="more"
     export function PlayOriginalMotion(motionNumber: number) {
-        DoMotion(motionNumber,false)
+        DoMotion(motionNumber, false)
     }
 
     /**
@@ -744,11 +801,13 @@ namespace plenxxx {
     //% flag.defl=false
     //% flag.shadow="toggleOnOff"
     //% weight=4 group="Power"
-    //% subcategory="Advanced"
+    //% subcategory="more"
     export function Power(flag: boolean) {
         let state = 0
         if (flag) state = 1
+
         pins.digitalWritePin(DigitalPin.P1, state)
+        pause(20)
 
         if (flag) PLENStartInit()
         else PLENEndInit()
@@ -762,9 +821,13 @@ namespace plenxxx {
     //% min.min=-1 min.defl=30
     //% min.shadow="PLEN:xxx_picker_autoPoweroffTime"
     //% weight=3 group="Power"
-    //% subcategory="Advanced"
+    //% subcategory="more"
     export function AutoPowerOff(min: number) {
-        autoPoweroffTimeSet = min
+        if (autoPoweroffTime > 0) {
+            autoPoweroffTime = min * 60000
+        } else {
+            autoPoweroffTime = -1
+        }
     }
 
     //メンテナンス用==================================================================
@@ -776,7 +839,8 @@ namespace plenxxx {
     //% block="Check %data"
     //% weight=10 group="Motion Data"
     //% subcategory="Maintenance"
-    export function Information(data: InformationData): string {
+    //% deprecated=true
+    export function Information(data: InformationData) {
         let dataBuffer = ReadEEPROM(0, 256, true)
         let final = dataBuffer.indexOf(Buffer.create(0))
         let dataJSON = JSON.parse(dataBuffer.slice(0, final).toString())
@@ -788,7 +852,11 @@ namespace plenxxx {
         } else {
             key = 'detail'
         }
-        return dataJSON[key]
+        if (dataJSON) {
+            return dataJSON[key]
+        } else {
+            return false
+        }
     }
 
     // 初期位置調整
@@ -799,6 +867,7 @@ namespace plenxxx {
     //% block="save the initial position"
     //% weight=9 group="Servo Adjust"
     //% subcategory="Maintenance"
+    //% deprecated=true
     export function SaveInitPosition() {
         // 初期位置データ書き込み
         plenxxx.WriteEEPROM(0, [1].concat(servoInitArray))
@@ -811,43 +880,12 @@ namespace plenxxx {
     //% block="reset the initial position"
     //% weight=8 group="Servo Adjust"
     //% subcategory="Maintenance"
+    //% deprecated=true
     export function ResetInitPosition() {
         // 初期位置データ削除
         let array = []
         for (let i = 0; i < servoCount + 1; i++)array.push(0)
         for (let i = 0; i < servoCount; i++) servoInitArray[i] = 0
         plenxxx.WriteEEPROM(0, array)
-    }
-
-    /**
-   * Load the servo initial position from the EEPROM.
-   */
-    //% blockId="PLEN:xxx_servoadjust_load"
-    //% block="load the initial position of servo motor"
-    //% weight=7 group="Servo Adjust"
-    //% subcategory="Maintenance"
-    export function LoadServoInit(): number[] {
-        let initDataBuffer = plenxxx.ReadEEPROM(0, servoCount + 1)
-        let initAngles = []
-        let count = 0
-        for (let i = 0; i < servoCount + 1; i++) {
-            let angle = initDataBuffer[i]
-            if (angle > 127) angle = -1 * ((~angle & 0xFF) + 1)
-            initAngles.push(angle)
-            if (angle == 0) count++
-        }
-
-        if (initAngles[0] == 1) {
-            // 初期位置調整済み
-        } else if (initAngles[0] == 0 && count == 19) {
-            // 初期位置リセット済み
-        } else {
-            // 初期位置リセット
-            ResetInitPosition()
-            for (let i = 0; i < servoCount + 1; i++) initAngles[i] = 0
-        }
-
-        initAngles.shift()
-        return initAngles
     }
 }
