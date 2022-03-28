@@ -230,9 +230,14 @@ namespace plenbit_full {
         if (recordingFlag >= 0) {
             let motionAdr = (56 + recordingFlag * 2) * 256
             let recordingFlame = ReadEEPROM(motionAdr, 1)[0]
-
             if (recordingFlame < 23) {
-                led.plotBarGraph(recordingFlame, 23)
+                let percent = (1 - recordingFlame / 23) * 4
+                for (let x = 0; x < 5; x++) {
+                    for (let y = 4; y >= percent ; y--) {
+                        led.plot(x, y)
+                    }
+                }
+                //led.plotBarGraph(recordingFlame, 23)
                 WriteEEPROM(motionAdr, [recordingFlame + 1])
                 WriteEEPROM(motionAdr + 1 + recordingFlame * 22, [recordingFlag, recordingFlame, (msec >> 8) & 0xFF, msec & 0xFF].concat(servoAngleGoal))
             } else {
@@ -354,7 +359,7 @@ namespace plenbit_full {
     // 初期位置データを取得
     export function InitEEPROM() {
         if (!initEEPROMFlag) {
-            if (Information(InformationData.Version)) {
+            if (!Information(InformationData.Version)) {
                 initEEPROMFlag = true
 
                 let initDataBuffer = plenbit_full.ReadEEPROM(0, servoCount + 1)
@@ -762,6 +767,7 @@ namespace plenbit_full {
 
             let motionAdr = (56 + recordingFlag * 2) * 256
             WriteEEPROM(motionAdr, [0])
+            basic.clearScreen()
         }
     }
 
