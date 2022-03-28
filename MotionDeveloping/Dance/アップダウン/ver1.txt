@@ -1,0 +1,47 @@
+let KIclass = new KI()
+plenxxx.LedEye(false)
+
+
+plenxxx.ServoMove(500)
+plenxxx.ServoFree(-1)
+let speed = 600
+let count = 4
+let debug = false
+
+input.onButtonPressed(Button.A, function () {
+
+    for (let i = 0; i < 18; i++) plenxxx.servoAngleGoal[i] = 0
+    KIclass.Move(100)
+
+    for(let i = 0;i<count;i++){
+        plenxxx.servoAngleGoal[2] = 20
+        plenxxx.servoAngleGoal[11] = 20
+        plenxxx.servoAngleGoal[3] = -20
+        plenxxx.servoAngleGoal[12] = -20
+
+        if(i == 2){
+            plenxxx.servoAngleGoal[0] = 30
+            plenxxx.servoAngleGoal[9] = -30
+        }
+        if (i == 3) {
+            plenxxx.servoAngleGoal[0] = -30
+            plenxxx.servoAngleGoal[9] = 30
+        }
+
+        KIclass.CalcFoot(10, 0, 1, 0, 2)
+        KIclass.SetL()
+        KIclass.CalcFoot(10, 0, 1, 0, 2)
+        KIclass.SetR()
+        KIclass.Move(speed)
+
+        if (debug) while (input.buttonIsPressed(Button.A) == false) { }
+
+        for (let i = 0; i < 18; i++) plenxxx.servoAngleGoal[i] = 0
+        KIclass.Move(speed)
+
+        if (debug) while (input.buttonIsPressed(Button.A) == false) { }
+    }
+
+    for (let i = 0; i < 18; i++) plenxxx.servoAngleGoal[i] = 0
+    KIclass.Move(500)
+})

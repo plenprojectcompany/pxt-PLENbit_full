@@ -1,0 +1,63 @@
+let KIclass = new KI()
+plenxxx.LedEye(false)
+
+
+plenxxx.ServoMove(500)
+plenxxx.ServoFree(-1)
+let speed = 600
+let count = 6
+let debug = false
+
+let motionData = `100
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+140
+0,0,0,0,-2,0,0,0,-6,0,0,0,0,2,0,0,0,6
+140
+0,0,3,0,-3,0,0,-1,-7,0,0,3,0,3,18,-35,15,3
+140
+0,0,3,0,-3,0,0,-1,-4,0,0,3,0,16,11,-21,8,12
+140
+0,0,6,0,-3,9,-12,5,3,0,0,9,0,15,17,-30,15,9
+140
+0,0,9,0,18,5,-1,-4,20,0,0,0,0,-6,8,-12,5,-8
+160
+0,0,0,0,3,21,-40,19,9,0,0,0,0,-3,8,-12,5,-5
+180
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+`
+
+input.onButtonPressed(Button.A, function () {
+
+    let motionDataArray = motionData.split('\n')
+    let time = 0
+
+    for (let i = 0; i < motionDataArray.length; i++) {
+        let value = motionDataArray[i].replaceAll(' ', '')
+        if (value) {
+            if (i % 2 == 0) {
+                time = parseInt(value)
+            } else {
+                let anglesValue = value.split(',')
+                let flameNumber = parseInt(((i + 1) / 2).toString())
+                if (anglesValue.length == 18) {
+                    let angles: number[] = []
+                    for (let j of anglesValue) angles.push(parseInt(j))
+                    plenxxx.servoAngleGoal = angles
+
+                    basic.showString(flameNumber.toString()[flameNumber.toString().length - 1], 0)
+
+
+                    if (flameNumber >= 3 && flameNumber <= 5) {
+                        plenxxx.servoAngleGoal[7] += 5
+                        plenxxx.servoAngleGoal[16] += 5
+                    }
+
+                    KIclass.Flip()
+                    KIclass.Move(time)
+
+                    if (debug) while (input.buttonIsPressed(Button.A) == false) { }
+                }
+            }
+        }
+    }
+})

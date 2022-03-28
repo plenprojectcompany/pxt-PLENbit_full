@@ -102,37 +102,37 @@ class KI {
     }
 
     SetL() {
-        plenxxx.servoAngleGoal[4] = this.angle_4
-        plenxxx.servoAngleGoal[5] = this.angle_5
-        plenxxx.servoAngleGoal[6] = this.angle_6
-        plenxxx.servoAngleGoal[7] = this.angle_7
-        plenxxx.servoAngleGoal[8] = this.angle_8
+        plenbit_full.servoAngleGoal[4] = this.angle_4
+        plenbit_full.servoAngleGoal[5] = this.angle_5
+        plenbit_full.servoAngleGoal[6] = this.angle_6
+        plenbit_full.servoAngleGoal[7] = this.angle_7
+        plenbit_full.servoAngleGoal[8] = this.angle_8
     }
 
     SetR() {
-        plenxxx.servoAngleGoal[13] = this.angle_4
-        plenxxx.servoAngleGoal[14] = this.angle_5
-        plenxxx.servoAngleGoal[15] = this.angle_6
-        plenxxx.servoAngleGoal[16] = this.angle_7
-        plenxxx.servoAngleGoal[17] = this.angle_8
+        plenbit_full.servoAngleGoal[13] = this.angle_4
+        plenbit_full.servoAngleGoal[14] = this.angle_5
+        plenbit_full.servoAngleGoal[15] = this.angle_6
+        plenbit_full.servoAngleGoal[16] = this.angle_7
+        plenbit_full.servoAngleGoal[17] = this.angle_8
     }
 
 
     Flip(){
         for(let i=0;i<9;i++){
-            let check = plenxxx.servoAngleGoal[i]
-            plenxxx.servoAngleGoal[i] = plenxxx.servoAngleGoal[i + 9]
-            plenxxx.servoAngleGoal[i+9] = check
+            let check = plenbit_full.servoAngleGoal[i]
+            plenbit_full.servoAngleGoal[i] = plenbit_full.servoAngleGoal[i + 9]
+            plenbit_full.servoAngleGoal[i+9] = check
         }
     }
 
 
     Move(msec: number) {
         serial.writeLine(msec.toString())
-        serial.writeNumbers(plenxxx.servoAngleGoal)
-        plenxxx.ServoMove(msec)
+        serial.writeNumbers(plenbit_full.servoAngleGoal)
+        plenbit_full.ServoMove(msec)
         //this.timelist.push(msec)
-        //this.anglelist.push(plenxxx.servoAngleGoal.slice())
+        //this.anglelist.push(plenbit_full.servoAngleGoal.slice())
     }
 
     Bezier(){
@@ -210,7 +210,7 @@ class PID {
 function BezierServoMoving(angle1: number[], angle2: number[], msec: number) {
     const startTime = input.runningTime();
 
-    let startangle = plenxxx.servoAngle.slice()
+    let startangle = plenbit_full.servoAngle.slice()
 
 
     /*serial.writeNumbers(startangle)
@@ -242,7 +242,7 @@ function BezierServoMoving(angle1: number[], angle2: number[], msec: number) {
         const deltaTime = input.runningTime() - startTime
 
         for (let i = 0; i < 18; i++) {
-            plenxxx.ServoControl(i, Angle(deltaTime, i), false)
+            plenbit_full.ServoControl(i, Angle(deltaTime, i), false)
             if (deltaTime >= msec) {
                 loop = false
                 break
