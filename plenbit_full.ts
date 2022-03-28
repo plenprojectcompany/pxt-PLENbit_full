@@ -237,7 +237,6 @@ namespace plenbit_full {
                         led.plot(x, y)
                     }
                 }
-                //led.plotBarGraph(recordingFlame, 23)
                 WriteEEPROM(motionAdr, [recordingFlame + 1])
                 WriteEEPROM(motionAdr + 1 + recordingFlame * 22, [recordingFlag, recordingFlame, (msec >> 8) & 0xFF, msec & 0xFF].concat(servoAngleGoal))
             } else {
@@ -359,7 +358,7 @@ namespace plenbit_full {
     // 初期位置データを取得
     export function InitEEPROM() {
         if (!initEEPROMFlag) {
-            if (!Information(InformationData.Version)) {
+            if (Information(InformationData.Version)) {
                 initEEPROMFlag = true
 
                 let initDataBuffer = plenbit_full.ReadEEPROM(0, servoCount + 1)
