@@ -376,7 +376,7 @@ namespace plenbit_full {
         }
     }
 
-    //PLEN:bit fullブロック==================================================================
+    //PLEN:bit_fullブロック==================================================================
     //ブロック要素==================================================================
     export enum StdMotions {
         //% block="0：Arm Up Down"
@@ -448,7 +448,7 @@ namespace plenbit_full {
           * Get the time field editor
           * @param ms time duration in milliseconds, eg: 500, 1000
           */
-    //% blockId="PLEN:bit full_picker_servoTime"
+    //% blockId="PLEN:bit_full_picker_servoTime"
     //% block="%ms"
     //% blockHidden=true shim=TD_ID
     //% colorSecondary="#FFFFFF"
@@ -461,7 +461,7 @@ namespace plenbit_full {
     /**
       * Get the time field editor
       */
-    //% blockId="PLEN:bit full_picker_autoPoweroffTime"
+    //% blockId="PLEN:bit_full_picker_autoPoweroffTime"
     //%block="%min"
     //% blockHidden=true shim=TD_ID
     //% colorSecondary="#FFFFFF"
@@ -474,7 +474,7 @@ namespace plenbit_full {
     /**
       * Get the servo number field editor
       */
-    //% blockId="PLEN:bit full_picker_servoNumber"
+    //% blockId="PLEN:bit_full_picker_servoNumber"
     //% block="%num"
     //% blockHidden=true shim=TD_ID
     //% colorSecondary="#FFFFFF"
@@ -487,7 +487,7 @@ namespace plenbit_full {
     /**
       * Get the servo number field editor
       */
-    //% blockId="PLEN:bit full_picker_servofreeNumber"
+    //% blockId="PLEN:bit_full_picker_servofreeNumber"
     //% block="%num"
     //% blockHidden=true shim=TD_ID
     //% colorSecondary="#FFFFFF"
@@ -501,9 +501,9 @@ namespace plenbit_full {
     //モーション
 
     /**
-     * Play the Standard Motion on PLEN:bit full.
+     * Play the Standard Motion on PLEN:bit_full.
      */
-    //% blockId=PLEN:bit full_motion_std
+    //% blockId=PLEN:bit_full_motion_std
     //% block="play std motion %fileName"
     //% weight=10 group="Motion"
     export function PlayStdMotion(fileName: StdMotions) {
@@ -511,9 +511,9 @@ namespace plenbit_full {
     }
 
     /**
-     * Play the Walk Motion on PLEN:bit full.
+     * Play the Walk Motion on PLEN:bit_full.
      */
-    //% blockId=PLEN:bit full_motion_walk
+    //% blockId=PLEN:bit_full_motion_walk
     //% block="play walk motion %fileName"
     //% weight=9 group="Motion"
     export function PlayWalkMotion(fileName: WalkMotions) {
@@ -521,9 +521,9 @@ namespace plenbit_full {
     }
 
     /**
-     * Play the Dance Motion on PLEN:bit full.
+     * Play the Dance Motion on PLEN:bit_full.
      */
-    //% blockId=PLEN:bit full_motion_dance
+    //% blockId=PLEN:bit_full_motion_dance
     //% block="play dance motion %fileName"
     //% weight=8 group="Motion"
     export function PlayDanceMotion(fileName: DanceMotions) {
@@ -533,7 +533,7 @@ namespace plenbit_full {
     /**
    * Set Servo Motors to Initial Position.
    */
-    //% blockId="PLEN:bit full_servo_init"
+    //% blockId="PLEN:bit_full_servo_init"
     //% block="set to Initial Position"
     //% weight=7 group="Motion"
     export function ServoInitialSet() {
@@ -543,9 +543,9 @@ namespace plenbit_full {
     }
 
     /**
-   * Switch the led eye of PLEN:bit full.
+   * Switch the led eye of PLEN:bit_full.
    */
-    //% blockId="PLEN:bit full_led"
+    //% blockId="PLEN:bit_full_led"
     //% block="set led eyes brightness to %bright percent"
     //% bright.min=0 bright.max=100 bright.defl=50
     //% weight=6 group="LED"
@@ -560,10 +560,10 @@ namespace plenbit_full {
     /**
    * Move Servo Motors to set degree.
    */
-    //% blockId="PLEN:bit full_servo_move"
+    //% blockId="PLEN:bit_full_servo_move"
     //% block="move servos to Set Position for %msec msec"
     //% msec.min=100 msec.max=1000 msec.defl=500
-    //% msec.shadow="PLEN:bit full_picker_servoTime"
+    //% msec.shadow="PLEN:bit_full_picker_servoTime"
     //% weight=10 group="Move"
     //% subcategory="Servo"
     export function ServoMove(msec: number) {
@@ -573,10 +573,10 @@ namespace plenbit_full {
     /**
    * Move Servo Motors to Initial Position.
    */
-    //% blockId="PLEN:bit full_servo_moveinit"
+    //% blockId="PLEN:bit_full_servo_moveinit"
     //% block="set to Initial Position for %msec msec"
     //% msec.min=100 msec.max=1000 msec.defl=500
-    //% msec.shadow="PLEN:bit full_picker_servoTime"
+    //% msec.shadow="PLEN:bit_full_picker_servoTime"
     //% weight=9 group="Move"
     //% subcategory="Servo"
     export function ServoMoveInit(msec: number) {
@@ -587,7 +587,7 @@ namespace plenbit_full {
     /**
    * Set Servo Motors degree.
    */
-    //% blockId="PLEN:bit full_servo_larm"
+    //% blockId="PLEN:bit_full_servo_larm"
     //% block="Left Arm      0:shoulder %S0    2:arm %S2   3:hand %S3 degrees"
     //% S0.min=-90 S0.max=90 S0.defl=0
     //% S2.min=0 S2.max=90 S2.defl=0
@@ -603,7 +603,7 @@ namespace plenbit_full {
     /**
    * Set Servo Motors degree.
    */
-    //% blockId="PLEN:bit full_servo_luleg"
+    //% blockId="PLEN:bit_full_servo_luleg"
     //% block="Left UpperLeg    1:groin %S1    4:leg %S4    5:lap %S5 degrees"
     //% S1.min=-90 S1.max=90 S1.defl=0
     //% S4.min=-60 S4.max=60 S4.defl=0
@@ -619,7 +619,7 @@ namespace plenbit_full {
     /**
    * Set Servo Motors degree.
    */
-    //% blockId="PLEN:bit full_servo_llleg"
+    //% blockId="PLEN:bit_full_servo_llleg"
     //% block="Left LowerLeg     6:knee %S6   7:shin %S7   8:foot %S8 degrees"
     //% S6.min=-90 S6.max=30 S6.defl=0
     //% S7.min=-90 S7.max=90 S7.defl=0
@@ -635,7 +635,7 @@ namespace plenbit_full {
     /**
    * Set Servo Motors degree.
    */
-    //% blockId="PLEN:bit full_servo_rarm"
+    //% blockId="PLEN:bit_full_servo_rarm"
     //% block="Right Arm     9:shoulder %S9   11:arm %S11  12:hand %S12 degrees"
     //% S9.min=-90 S9.max=90 S9.defl=0
     //% S11.min=0 S11.max=90 S11.defl=0
@@ -651,7 +651,7 @@ namespace plenbit_full {
     /**
    * Set Servo Motors degree.
    */
-    //% blockId="PLEN:bit full_servo_ruleg"
+    //% blockId="PLEN:bit_full_servo_ruleg"
     //% block="Right UpperLeg  10:groin %S10   13:leg %S13   14:lap %S14 degrees"
     //% S10.min=-90 S10.max=90 S10.defl=0
     //% S13.min=-60 S13.max=60 S13.defl=0
@@ -667,7 +667,7 @@ namespace plenbit_full {
     /**
    * Set Servo Motors degree.
    */
-    //% blockId="PLEN:bit full_servo_rlleg"
+    //% blockId="PLEN:bit_full_servo_rlleg"
     //% block="Right LowerLeg   15:knee %S15  16:shin %S16  17:foot %S17 degrees"
     //% S15.min=-90 S15.max=30 S15.defl=0
     //% S16.min=-90 S16.max=90 S16.defl=0
@@ -682,11 +682,11 @@ namespace plenbit_full {
 
     //発展==================================================================
     /**
-   * Play the Motion on PLEN:bit full.
+   * Play the Motion on PLEN:bit_full.
    * You can check the list of Motion Number at GitHub.
    * @param motionNumber https://github.com/plenprojectcompany/pxt-PLENxxx
    */
-    //% blockId=PLEN:bit full_motion_play
+    //% blockId=PLEN:bit_full_motion_play
     //% block="play motion %fileName"
     //% motionNumber.min=0 motionNumber.max=255 motionNumber.defl=0
     //% weight=11 group="Servo"
@@ -696,9 +696,9 @@ namespace plenbit_full {
     }
 
     /**
-   * Change the playing speed of the PLEN:bit full motion.
+   * Change the playing speed of the PLEN:bit_full motion.
    */
-    //% blockId=PLEN:bit full_motion_speed
+    //% blockId=PLEN:bit_full_motion_speed
     //% block="set motion speed to %speed percent"
     //% speed.min=10 speed.max=300 speed.defl=100
     //% weight=10 group="Servo"
@@ -710,10 +710,10 @@ namespace plenbit_full {
     /**
    * Controll the each servo motors. The servo will move max speed.
    */
-    //% blockId="PLEN:bit full_servo"
+    //% blockId="PLEN:bit_full_servo"
     //% block="set the servo motor %num to %degrees degrees"
     //% num.min=0 num.max=17 num.defl=0
-    //% num.shadow="PLEN:bit full_picker_servoNumber"
+    //% num.shadow="PLEN:bit_full_picker_servoNumber"
     //% degrees.min=-90 degrees.max=90 degrees.defl=0
     //% weight=9 group="Servo"
     //% subcategory="more"
@@ -725,10 +725,10 @@ namespace plenbit_full {
     /**
    * Set Servo Motors to free.
    */
-    //% blockId="PLEN:bit full_servo_free"
+    //% blockId="PLEN:bit_full_servo_free"
     //% block="free the servo motor %num"
     //% num.defl=-1
-    //% num.shadow="PLEN:bit full_picker_servofreeNumber"
+    //% num.shadow="PLEN:bit_full_picker_servofreeNumber"
     //% weight=8 group="Servo"
     //% subcategory="more"
     export function ServoFree(num: number) {
@@ -746,10 +746,10 @@ namespace plenbit_full {
     }
 
     /**
-   * Recording Original Motion on PLEN:bit full. Max 23 flames each motion.
+   * Recording Original Motion on PLEN:bit_full. Max 23 flames each motion.
    * @param motionNumber 0～99
    */
-    //% blockId=PLEN:bit full_originalmotion_recording
+    //% blockId=PLEN:bit_full_originalmotion_recording
     //% block="recoding original motion %fileName"
     //% motionNumber.min=0 motionNumber.max=99 motionNumber.defl=0
     //% weight=7 group="Original Motion"
@@ -766,9 +766,9 @@ namespace plenbit_full {
     }
 
     /**
-   * Stop Recording the Original Motion on PLEN:bit full.
+   * Stop Recording the Original Motion on PLEN:bit_full.
    */
-    //% blockId=PLEN:bit full_originalmotion_stop
+    //% blockId=PLEN:bit_full_originalmotion_stop
     //% block="stop recoding"
     //% weight=6 group="Original Motion"
     //% subcategory="more"
@@ -781,10 +781,10 @@ namespace plenbit_full {
     }
 
     /**
-   * Play the Original Motion on PLEN:bit full.
+   * Play the Original Motion on PLEN:bit_full.
    * @param motionNumber 0～99
    */
-    //% blockId=PLEN:bit full_originalmotion
+    //% blockId=PLEN:bit_full_originalmotion
     //% block="play original motion %fileName"
     //% motionNumber.min=0 motionNumber.max=99 motionNumber.defl=0
     //% weight=5 group="Original Motion"
@@ -794,10 +794,10 @@ namespace plenbit_full {
     }
 
     /**
-   * Power off PLEN:bit full.
+   * Power off PLEN:bit_full.
    */
-    //% blockId="PLEN:bit full_system_power"
-    //% block="turn %flag PLEN:bit full"
+    //% blockId="PLEN:bit_full_system_power"
+    //% block="turn %flag PLEN:bit_full"
     //% flag.defl=false
     //% flag.shadow="toggleOnOff"
     //% weight=4 group="Power"
@@ -814,12 +814,12 @@ namespace plenbit_full {
     }
 
     /**
-   * Set auto power-off time of PLEN:bit full. 30 minutes is default.
+   * Set auto power-off time of PLEN:bit_full. 30 minutes is default.
    */
-    //% blockId="PLEN:bit full_system_autopoweroff"
-    //% block="auto power-off %min minutes after PLEN:bit full power on"
+    //% blockId="PLEN:bit_full_system_autopoweroff"
+    //% block="auto power-off %min minutes after PLEN:bit_full power on"
     //% min.min=-1 min.defl=30
-    //% min.shadow="PLEN:bit full_picker_autoPoweroffTime"
+    //% min.shadow="PLEN:bit_full_picker_autoPoweroffTime"
     //% weight=3 group="Power"
     //% subcategory="more"
     export function AutoPowerOff(min: number) {
@@ -835,7 +835,7 @@ namespace plenbit_full {
     /**
       * Check the Motion Data information from EEPROM.
       */
-    //% blockId="PLEN:bit full_maintenance_info"
+    //% blockId="PLEN:bit_full_maintenance_info"
     //% block="Check %data"
     //% weight=10 group="Motion Data"
     //% subcategory="Maintenance"
@@ -863,7 +863,7 @@ namespace plenbit_full {
     /**
       * Save the servo initial position to the EEPROM.
       */
-    //% blockId="PLEN:bit full_servoadjust_save"
+    //% blockId="PLEN:bit_full_servoadjust_save"
     //% block="save the initial position"
     //% weight=9 group="Servo Adjust"
     //% subcategory="Maintenance"
@@ -876,7 +876,7 @@ namespace plenbit_full {
     /**
       * Delete the servo initial position from the EEPROM.
       */
-    //% blockId="PLEN:bit full_servoadjust_delete"
+    //% blockId="PLEN:bit_full_servoadjust_delete"
     //% block="reset the initial position"
     //% weight=8 group="Servo Adjust"
     //% subcategory="Maintenance"
