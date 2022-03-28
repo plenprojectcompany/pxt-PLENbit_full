@@ -372,6 +372,8 @@ namespace plenbit_full {
                     initAngles.shift()
                     for (let i = 0; i < servoCount; i++) servoInitArray[i] = initAngles[i]
                 }
+            }else{
+                basic.showIcon(IconNames.No)
             }
         }
     }
@@ -684,7 +686,7 @@ namespace plenbit_full {
     /**
    * Play the Motion on PLEN:bit_full.
    * You can check the list of Motion Number at GitHub.
-   * @param motionNumber https://github.com/plenprojectcompany/pxt-PLENxxx
+   * @param motionNumber https://github.com/plenprojectcompany/pxt-PLENbit_full
    */
     //% blockId=PLEN:bit_full_motion_play
     //% block="play motion %fileName"
