@@ -8,8 +8,8 @@
     "files": [
         "README.md",
         "plenbit_full.ts",
-        "_locales/ja/pxt-plenxxx-strings.json",
-        "_locales/ja/pxt-plenxxx-jsdoc-strings.json"
+        "_locales/ja/pxt-plenbit_full-strings.json",
+        "_locales/ja/pxt-plenbit_full-jsdoc-strings.json"
     ],
     "testFiles": [
         "test.ts"
