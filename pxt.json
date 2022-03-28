@@ -1,13 +1,13 @@
 {
-    "name": "pxt-plenxxx",
+    "name": "pxt-plenbit_full",
     "version": "0.0.0",
-    "description": "plenxxx",
+    "description": "PLEN:bit full",
     "dependencies": {
         "core": "*"
     },
     "files": [
         "README.md",
-        "plenxxx.ts",
+        "plenbit_full.ts",
         "_locales/ja/pxt-plenxxx-strings.json",
         "_locales/ja/pxt-plenxxx-jsdoc-strings.json"
     ],
