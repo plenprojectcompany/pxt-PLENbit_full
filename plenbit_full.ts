@@ -63,13 +63,14 @@ namespace plenbit_full {
                 }
 
                 if (playingMotionNumber != playingMotionNumberCheck) {
+                    playingMotionNumberCheck = playingMotionNumber
                     if (playingMotionNumber != -1) {
+                        playingMotionNumber = -1
+                        playingMotionNumberCheck = -1
                         LinearServoMoving(continueMotionTime)
                         pause(100)
                         ServoFree(-1)
-                        playingMotionNumber = -1
                     }
-                    playingMotionNumberCheck = playingMotionNumber
                 }
             }
         })
