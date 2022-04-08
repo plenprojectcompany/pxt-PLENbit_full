@@ -488,7 +488,7 @@ namespace plenbit_full {
     //% blockHidden=true shim=TD_ID
     //% colorSecondary="#FFFFFF"
     //% num.fieldEditor="numberdropdown" num.fieldOptions.decompileLiterals=true
-    //% num.fieldOptions.data='[["0：L shoulder", 0], ["1：L groin", 1], ["2：L arm", 2], ["3：L hand", 3], ["4：L leg", 4], ["5：L lap", 5], ["6：L knee", 6], ["7：L shin", 7], ["8：L foot", 8],["9：R shoulder", 9], ["10：R groin", 10], ["11：R arm", 11], ["12：R hand", 12], ["13：R leg", 13], ["14：R lap", 14], ["15：R knee", 15], ["16：R shin", 16], ["17：R foot", 17]]'
+    //% num.fieldOptions.data='[["0：L shoulder", 0], ["1：L hip", 1], ["2：L arm", 2], ["3：L hand", 3], ["4：L groin", 4], ["5：L lap", 5], ["6：L knee", 6], ["7：L shin", 7], ["8：L foot", 8],["9：R shoulder", 9], ["10：R hip", 10], ["11：R arm", 11], ["12：R hand", 12], ["13：R groin", 13], ["14：R lap", 14], ["15：R knee", 15], ["16：R shin", 16], ["17：R foot", 17]]'
     export function servoNumberPicker(num: number): number {
         return num
     }
@@ -501,7 +501,7 @@ namespace plenbit_full {
     //% blockHidden=true shim=TD_ID
     //% colorSecondary="#FFFFFF"
     //% num.fieldEditor="numberdropdown" num.fieldOptions.decompileLiterals=true
-    //% num.fieldOptions.data='[["All", -1], ["0：L shoulder", 0], ["1：L groin", 1], ["2：L arm", 2], ["3：L hand", 3], ["4：L leg", 4], ["5：L lap", 5], ["6：L knee", 6], ["7：L shin", 7], ["8：L foot", 8],["9：R shoulder", 9], ["10：R groin", 10], ["11：R arm", 11], ["12：R hand", 12], ["13：R leg", 13], ["14：R lap", 14], ["15：R knee", 15], ["16：R shin", 16], ["17：R foot", 17]]'
+    //% num.fieldOptions.data='[["All", -1], ["0：L shoulder", 0], ["1：L hip", 1], ["2：L arm", 2], ["3：L hand", 3], ["4：L groin", 4], ["5：L lap", 5], ["6：L knee", 6], ["7：L shin", 7], ["8：L foot", 8],["9：R shoulder", 9], ["10：R hip", 10], ["11：R arm", 11], ["12：R hand", 12], ["13：R groin", 13], ["14：R lap", 14], ["15：R knee", 15], ["16：R shin", 16], ["17：R foot", 17]]'
     export function servofreeNumberPicker(num: number): number {
         return num
     }
