@@ -1,8 +1,8 @@
 The MIT License (MIT)
 
-Copyright (c) 2019,
+Copyright (c) 2022,
 
-- [Mitsuhiro MIYAGUCHI](https://github.com/hkr352)
+- [Isaki Matsubara](https://github.com/IsakiMatsubara)
 - [PLEN Project Company Inc.](https://plen.jp)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
