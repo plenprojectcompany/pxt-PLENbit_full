@@ -43,6 +43,8 @@
   "plenbit_full.WalkMotions.FStep|block": "14：前ステップ",
   "plenbit_full.WalkMotions.LStep|block": "16：左ステップ",
   "plenbit_full.WalkMotions.RStep|block": "17：右ステップ",
+  "plenbit_full.WalkMotions.LKick|block": "18：左キック",
+  "plenbit_full.WalkMotions.RKick|block": "19：右キック",
   "plenbit_full.WalkMotions.WalkBack|block": "11：後に進む",
   "plenbit_full.WalkMotions.WalkForward|block": "10：前に進む",
   "plenbit_full.WalkMotions.WalkLTurn|block": "12：左に進む",
