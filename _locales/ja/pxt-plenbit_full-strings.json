@@ -14,7 +14,7 @@
   "plenbit_full.InformationData.Version|block": "バージョン",
   "plenbit_full.Information|block": "EEPROMの %data を確認",
   "plenbit_full.LedEye|block": "目の明るさを %bright パーセントにする",
-  "plenbit_full.RecodingOriginalMotion|block": "オリジナルモーションを %fileName 番に記録する",
+  "plenbit_full.RecodingOriginalMotion|block": "オリジナルモーション %fileName への記録をはじめる",
   "plenbit_full.StopRecodingOriginalMotion|block": "オリジナルモーションの記録をやめる",
   "plenbit_full.PlayOriginalMotion|block": "オリジナルモーション %fileName をする",
   "plenbit_full.Power|block": "PLEN:bit fullの電源を %flag にする",
