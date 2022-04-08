@@ -1,13 +1,13 @@
-# pxt-plenbit-blocks
+# pxt-plenbit_full-blocks
 
-## PLEN:bit
+## PLEN:bit full
 
-PLEN:bit is a small humanoid robot with movable arms and legs. Anyone can easily use PLEN:bit through programing and onboard sensors.
+PLEN:bit full is a full-size robot of PLEN:bit, which is a small humanoid robot with movable arms and legs. Anyone can easily use PLEN:bit series through programing and onboard sensors.
 
-Please refer to this page about PLEN:bit
+Please refer to this page about PLEN:bit series
 https://plen.jp/plenbit/#manual
 
-https://makecode.microbit.org/pkg/plenprojectcompany/pxt-PLENbit
+https://github.com/plenprojectcompany/pxt-PLENbit_full
 
 ## Basic usage
 
@@ -15,7 +15,7 @@ https://makecode.microbit.org/pkg/plenprojectcompany/pxt-PLENbit
 //Play WalkForward motion when button A pressed
 //There are many other motions.
 input.onButtonPressed(Button.A, function () {
-    plenbit.stdMotion(plenbit.StdMotions.WalkForward)
+    plenbit_full.PlayWalkMotion(plenbit_full.WalkMotions.WalkForward)
 })
 ```
 
