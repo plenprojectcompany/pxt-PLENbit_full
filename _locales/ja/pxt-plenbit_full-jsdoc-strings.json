@@ -25,7 +25,7 @@
   "plenbit_full.autopoweroffTimePicker": "Get the time field editor",
   "plenbit_full.PlayDanceMotion": "ダンスモーションを再生します。",
   "plenbit_full.PlayMotion": "モーションを再生します。\r\nモーション番号は、GitHubにて確認できます。",
-  "plenbit_full.PlayMotion|param|motionNumber": "https://github.com/plenprojectcompany/pxt-PLENxxx",
+  "plenbit_full.PlayMotion|param|motionNumber": "https://github.com/plenprojectcompany/plenbit_full-Motion/blob/main/MotionList.pdf",
   "plenbit_full.SetMotionSpeed": "モーションの再生速度を変更します。",
   "plenbit_full.servoNumberPicker": "Get the servo number field editor",
   "plenbit_full.servofreeNumberPicker": "Get the servo number field editor",

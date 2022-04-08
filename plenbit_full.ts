@@ -689,7 +689,7 @@ namespace plenbit_full {
     /**
    * Play the Motion on PLEN:bit_full.
    * You can check the list of Motion Number at GitHub.
-   * @param motionNumber https://github.com/plenprojectcompany/pxt-PLENbit_full
+   * @param motionNumber https://github.com/plenprojectcompany/plenbit_full-Motion/blob/main/MotionList.pdf
    */
     //% blockId=PLEN:bit_full_motion_play
     //% block="play motion %fileName"
