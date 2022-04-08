@@ -234,7 +234,7 @@ namespace plenbit_full {
             if (recordingFlame < 23) {
                 let percent = (1 - recordingFlame / 23) * 4
                 for (let x = 0; x < 5; x++) {
-                    for (let y = 4; y >= percent ; y--) {
+                    for (let y = 4; y >= percent; y--) {
                         led.plot(x, y)
                     }
                 }
@@ -416,7 +416,11 @@ namespace plenbit_full {
         //% block="16：Left Step"
         LStep = 16,
         //% block="17：Right Step"
-        RStep = 17
+        RStep = 17,
+        //% block="17：Left Kick"
+        LKick = 18,
+        //% block="18：Right Kick"
+        RKick = 19
     }
 
     export enum DanceMotions {
@@ -593,13 +597,14 @@ namespace plenbit_full {
    * Set Servo Motors degree.
    */
     //% blockId="PLEN:bit_full_servo_larm"
-    //% block="Left Arm      0:shoulder %S0    2:arm %S2   3:hand %S3 degrees"
+    //% block="Left Arm      0:shoulder %S0    2:arm %S2  3:hand %S3 degrees"
     //% S0.min=-90 S0.max=90 S0.defl=0
     //% S2.min=0 S2.max=90 S2.defl=0
     //% S3.min=-90 S3.max=90 S3.defl=0
     //% weight=8 group="Left Servo Positions"
     //% subcategory="Servo"
     export function SetLArm(S0: number, S2: number, S3: number) {
+        if(S2<0) S2=0
         servoAngleGoal[0] = S0
         servoAngleGoal[2] = S2
         servoAngleGoal[3] = S3
@@ -609,13 +614,15 @@ namespace plenbit_full {
    * Set Servo Motors degree.
    */
     //% blockId="PLEN:bit_full_servo_luleg"
-    //% block="Left UpperLeg    1:groin %S1    4:leg %S4    5:lap %S5 degrees"
+    //% block="Left UpperLeg      1:hip %S1  4:groin %S4   5:lap %S5 degrees"
     //% S1.min=-90 S1.max=90 S1.defl=0
-    //% S4.min=-60 S4.max=60 S4.defl=0
+    //% S4.min=-60 S4.max=20 S4.defl=0
     //% S5.min=-90 S5.max=90 S5.defl=0
     //% weight=7 group="Left Servo Positions"
     //% subcategory="Servo"
     export function SetLUpperLeg(S1: number, S4: number, S5: number) {
+        if (S4 < -60) S4 = -60
+        if (S4 > 20) S4 = 20
         servoAngleGoal[1] = S1
         servoAngleGoal[4] = S4
         servoAngleGoal[5] = S5
@@ -625,13 +632,14 @@ namespace plenbit_full {
    * Set Servo Motors degree.
    */
     //% blockId="PLEN:bit_full_servo_llleg"
-    //% block="Left LowerLeg     6:knee %S6   7:shin %S7   8:foot %S8 degrees"
-    //% S6.min=-90 S6.max=30 S6.defl=0
+    //% block="Left LowerLeg     6:knee %S6   7:shin %S7  8:foot %S8 degrees"
+    //% S6.min=-90 S6.max=0 S6.defl=0
     //% S7.min=-90 S7.max=90 S7.defl=0
-    //% S8.min=-90 S8.max=30 S8.defl=0
+    //% S8.min=-20 S8.max=90 S8.defl=0
     //% weight=6 group="Left Servo Positions"
     //% subcategory="Servo"
     export function SetLLowerLeg(S6: number, S7: number, S8: number) {
+        if (S6 < 0) S6 = 0
         servoAngleGoal[6] = S6
         servoAngleGoal[7] = S7
         servoAngleGoal[8] = S8
@@ -641,13 +649,14 @@ namespace plenbit_full {
    * Set Servo Motors degree.
    */
     //% blockId="PLEN:bit_full_servo_rarm"
-    //% block="Right Arm     9:shoulder %S9   11:arm %S11  12:hand %S12 degrees"
+    //% block="Right Arm     9:shoulder %S9   11:arm %S11 12:hand %S12 degrees"
     //% S9.min=-90 S9.max=90 S9.defl=0
     //% S11.min=0 S11.max=90 S11.defl=0
     //% S12.min=-90 S12.max=90 S12.defl=0
     //% weight=5 group="Right Servo Positions"
     //% subcategory="Servo"
     export function SetRArm(S9: number, S11: number, S12: number) {
+        if (S11 < 0) S11 = 0
         servoAngleGoal[9] = S9
         servoAngleGoal[11] = S11
         servoAngleGoal[12] = S12
@@ -657,13 +666,15 @@ namespace plenbit_full {
    * Set Servo Motors degree.
    */
     //% blockId="PLEN:bit_full_servo_ruleg"
-    //% block="Right UpperLeg  10:groin %S10   13:leg %S13   14:lap %S14 degrees"
+    //% block="Right UpperLeg    10:hip %S10 13:groin %S13  14:lap %S14 degrees"
     //% S10.min=-90 S10.max=90 S10.defl=0
-    //% S13.min=-60 S13.max=60 S13.defl=0
+    //% S13.min=-60 S13.max=20 S13.defl=0
     //% S14.min=-90 S14.max=90 S14.defl=0
     //% weight=4 group="Right Servo Positions"
     //% subcategory="Servo"
     export function SetRUpperLeg(S10: number, S13: number, S14: number) {
+        if (S13 < -60) S13 = -60
+        if (S13 > 20) S13 = 20
         servoAngleGoal[10] = S10
         servoAngleGoal[13] = S13
         servoAngleGoal[14] = S14
@@ -673,13 +684,15 @@ namespace plenbit_full {
    * Set Servo Motors degree.
    */
     //% blockId="PLEN:bit_full_servo_rlleg"
-    //% block="Right LowerLeg   15:knee %S15  16:shin %S16  17:foot %S17 degrees"
-    //% S15.min=-90 S15.max=30 S15.defl=0
+    //% block="Right LowerLeg   15:knee %S15  16:shin %S16 17:foot %S17 degrees"
+    //% S15.min=-90 S15.max=0 S15.defl=0
     //% S16.min=-90 S16.max=90 S16.defl=0
-    //% S17.min=-90 S17.max=30 S17.defl=0
+    //% S17.min=-20 S17.max=90 S17.defl=0
     //% weight=3 group="Right Servo Positions"
     //% subcategory="Servo"
     export function SetRLowerLeg(S15: number, S16: number, S17: number) {
+        if (S15 < 0) S15 = 0
+        if (S17 < -20) S17 = -20
         servoAngleGoal[15] = S15
         servoAngleGoal[16] = S16
         servoAngleGoal[17] = S17
@@ -689,7 +702,7 @@ namespace plenbit_full {
     /**
    * Play the Motion on PLEN:bit_full.
    * You can check the list of Motion Number at GitHub.
-   * @param motionNumber https://github.com/plenprojectcompany/plenbit_full-Motion/blob/main/MotionList.pdf
+   * @param motionNumber https://github.com/plenprojectcompany/pxt-PLENbit_full
    */
     //% blockId=PLEN:bit_full_motion_play
     //% block="play motion %fileName"
