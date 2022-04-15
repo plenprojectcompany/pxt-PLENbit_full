@@ -1,6 +1,6 @@
 {
     "name": "pxt-plenbit_full",
-    "version": "0.0.",
+    "version": "0.0.1",
     "description": "PLEN:bit full",
     "dependencies": {
         "core": "*"
