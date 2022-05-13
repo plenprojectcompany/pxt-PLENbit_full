@@ -1,7 +1,7 @@
 {
   "name": "pxt-plenbit_full",
   "version": "1.0.0",
-  "description": "PLEN:bit full is a full-size robot of PLEN:bit, which is a small humanoid robot with movable arms and legs. Anyone can easily use PLEN:bit series through programing and onboard sensors.",
+  "description": "PLEN:bit full is a full-sized robot of PLEN:bit, which is a small humanoid robot with movable arms and legs. Anyone can easily use PLEN:bit series through programing and onboard sensors.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

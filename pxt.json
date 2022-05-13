@@ -1,7 +1,7 @@
 {
     "name": "pxt-plenbit_full",
     "version": "0.0.0",
-    "description": "PLEN:bit full is a full-size robot of PLEN:bit, which is a small humanoid robot with movable arms and legs. Anyone can easily use PLEN:bit series through programing and onboard sensors.",
+    "description": "Extention Blocks for PLEN:bit full – a small full-sized humanoid robot",
     "dependencies": {
         "core": "*"
     },
