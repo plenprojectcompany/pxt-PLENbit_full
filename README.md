@@ -299,7 +299,7 @@ function servoAdjust () {
 ## Other guides
 
 Programming guide here
-https://plen.jp/wp/plenbit_full/
+https://plen.jp/wp/plenbit/
 
 ## License
 
