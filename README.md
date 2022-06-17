@@ -4,10 +4,10 @@
 
 PLEN:bit full is a full-sized robot of PLEN:bit, which is a small humanoid robot with movable arms and legs. Anyone can easily use PLEN:bit series through programing and onboard sensors.
 
-Please refer to this page about PLEN:bit series
-https://plen.jp/plenbit/#manual
+Please refer to this page about PLEN:bit series.
+https://plen.jp/plenbit_full/#manual
 
-https://github.com/plenprojectcompany/pxt-PLENbit_full
+https://makecode.microbit.org/pkg/plenprojectcompany/pxt-plenbit_full
 
 ## Basic usage
 
@@ -15,7 +15,7 @@ https://github.com/plenprojectcompany/pxt-PLENbit_full
 //Play WalkForward motion when button A pressed
 //There are many other motions.
 input.onButtonPressed(Button.A, function () {
-    plenbit_full.PlayWalkMotion(plenbit_full.WalkMotions.WalkForward)
+    plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
 })
 ```
 
@@ -24,24 +24,24 @@ input.onButtonPressed(Button.A, function () {
 ### PLEN:bit Basic
 
 ```blocks
-plenbit.servoInitialSet()
+plenbit_full.servoInitialSet()
 basic.showIcon(IconNames.Happy)
 
 basic.forever(function () {
-    plenbit.eyeLed(plenbit.LedOnOff.On)
+    plenbit_full.eyeLed(plenbit_full.LedOnOff.On)
     basic.pause(100)
-    plenbit.eyeLed(plenbit.LedOnOff.Off)
+    plenbit_full.eyeLed(plenbit_full.LedOnOff.Off)
     basic.pause(100)
 })
 
 input.onButtonPressed(Button.A, function () {
-    plenbit.stdMotion(plenbit.StdMotions.WalkForward)
+    plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
 })
 input.onButtonPressed(Button.B, function () {
-    plenbit.stdMotion(plenbit.StdMotions.ArmPataPata)
+    plenbit_full.stdMotion(plenbit_full.StdMotions.ArmPataPata)
 })
 input.onButtonPressed(Button.AB, function () {
-    plenbit.soccerMotion(plenbit.SocMotions.RKick)
+    plenbit_full.soccerMotion(plenbit_full.SocMotions.RKick)
 })
 ```
 
@@ -49,9 +49,9 @@ input.onButtonPressed(Button.AB, function () {
 
 ```blocks
 basic.forever(function () {
-    if (plenbit.checkDistane(plenbit.LedLr.BButtonSide, 600)) {
+    if (plenbit_full.checkDistane(plenbit_full.LedLr.BButtonSide, 600)) {
         basic.showIcon(IconNames.Happy)
-        plenbit.stdMotion(plenbit.StdMotions.ArmPataPata)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.ArmPataPata)
     } else {
         basic.showIcon(IconNames.Sad)
     }
@@ -60,12 +60,12 @@ basic.forever(function () {
 ### Sound sensor Basic
 
 ```blocks
-let mic = plenbit.initMic(plenbit.LedLr.AButtonSide)
+let mic = plenbit_full.initMic(plenbit_full.LedLr.AButtonSide)
 basic.showIcon(IconNames.Sad)
 basic.forever(function () {
-    if (plenbit.checkMic(plenbit.LedLr.AButtonSide, 150, mic)) {
+    if (plenbit_full.checkMic(plenbit_full.LedLr.AButtonSide, 150, mic)) {
         basic.showIcon(IconNames.Happy)
-        plenbit.stdMotion(plenbit.StdMotions.ArmPataPata)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.ArmPataPata)
         basic.showIcon(IconNames.Sad)
     }
 })
@@ -76,16 +76,16 @@ basic.forever(function () {
 ```blocks
 // Type A
 input.onButtonPressed(Button.A, function () {
-    plenbit.stdMotion(plenbit.StdMotions.WalkForward)
-    plenbit.stdMotion(plenbit.StdMotions.WalkForward)
-    plenbit.stdMotion(plenbit.StdMotions.WalkForward)
+    plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
+    plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
+    plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
 })
 // Type B
 input.onButtonPressed(Button.B, function () {
-    plenbit.walk(plenbit.WalkMode.Move)
-    plenbit.walk(plenbit.WalkMode.Move)
-    plenbit.walk(plenbit.WalkMode.Move)
-    plenbit.walk(plenbit.WalkMode.Stop)
+    plenbit_full.walk(plenbit_full.WalkMode.Move)
+    plenbit_full.walk(plenbit_full.WalkMode.Move)
+    plenbit_full.walk(plenbit_full.WalkMode.Move)
+    plenbit_full.walk(plenbit_full.WalkMode.Stop)
 })
 ```
 
@@ -96,7 +96,7 @@ basic.showIcon(IconNames.Happy)
 basic.forever(function () {
     if (input.acceleration(Dimension.Z) < -512) {
         basic.showIcon(IconNames.Sad)
-        plenbit.stdMotion(plenbit.StdMotions.ArmPataPata)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.ArmPataPata)
     } else {
         basic.showIcon(IconNames.Happy)
     }
@@ -107,14 +107,14 @@ basic.forever(function () {
 
 ```blocks
 basic.forever(function () {
-    if (plenbit.checkDistane(plenbit.LedLr.BButtonSide, 600)) {
+    if (plenbit_full.checkDistane(plenbit_full.LedLr.BButtonSide, 600)) {
         basic.showIcon(IconNames.Sad)
         for (let index = 0; index < 3; index++) {
-            plenbit.stdMotion(plenbit.StdMotions.WalkRTurn)
+            plenbit_full.stdMotion(plenbit_full.StdMotions.WalkRTurn)
         }
         basic.showIcon(IconNames.Happy)
     } else {
-        plenbit.stdMotion(plenbit.StdMotions.WalkForward)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
     }
 })
 ```
@@ -123,15 +123,15 @@ basic.forever(function () {
 
 ```blocks
 basic.forever(function () {
-    if (plenbit.checkDistane(plenbit.LedLr.BButtonSide, 600)) {
-        plenbit.walk(plenbit.WalkMode.Stop)
+    if (plenbit_full.checkDistane(plenbit_full.LedLr.BButtonSide, 600)) {
+        plenbit_full.walk(plenbit_full.WalkMode.Stop)
         basic.showIcon(IconNames.Sad)
         for (let index = 0; index < 3; index++) {
-            plenbit.stdMotion(plenbit.StdMotions.WalkRTurn)
+            plenbit_full.stdMotion(plenbit_full.StdMotions.WalkRTurn)
         }
         basic.showIcon(IconNames.Happy)
     } else {
-        plenbit.walk(plenbit.WalkMode.Move)
+        plenbit_full.walk(plenbit_full.WalkMode.Move)
     }
 })
 ```
@@ -141,38 +141,38 @@ basic.forever(function () {
 ```blocks
 let direction = 0
 basic.forever(function () {
-    direction = plenbit.direction()
+    direction = plenbit_full.direction()
     if (direction <= 20 || direction >= 340) {
         basic.showArrow(ArrowNames.North)
-        plenbit.stdMotion(plenbit.StdMotions.WalkForward)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
     } else if (direction > 20 && direction <= 180) {
         basic.showArrow(ArrowNames.East)
-        plenbit.stdMotion(plenbit.StdMotions.WalkLTurn)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.WalkLTurn)
     } else if (direction > 180 && direction < 340) {
         basic.showArrow(ArrowNames.West)
-        plenbit.stdMotion(plenbit.StdMotions.WalkRTurn)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.WalkRTurn)
     }
 })
 ```
 ### Let's make a motion!
 
 ```blocks
-plenbit.servoInitialSet()
+plenbit_full.servoInitialSet()
 basic.showIcon(IconNames.Happy)
 
 input.onButtonPressed(Button.A, function () {
     R_Punch()
 })
 function R_Punch () {
-    plenbit.setAngle([0, 0, 0, 0, -900, 0, 0, 0], 300)
-    plenbit.setAngle([0, 0, 0, 0, 0, 0, 0, 0], 300)
+    plenbit_full.setAngle([0, 0, 0, 0, -900, 0, 0, 0], 300)
+    plenbit_full.setAngle([0, 0, 0, 0, 0, 0, 0, 0], 300)
 }
 input.onButtonPressed(Button.B, function () {
     L_Punch()
 })
 function L_Punch () {
-    plenbit.setAngle([900, 0, 0, 0, 0, 0, 0, 0], 300)
-    plenbit.setAngle([0, 0, 0, 0, 0, 0, 0, 0], 300)
+    plenbit_full.setAngle([900, 0, 0, 0, 0, 0, 0, 0], 300)
+    plenbit_full.setAngle([0, 0, 0, 0, 0, 0, 0, 0], 300)
 }
 ```
 
@@ -192,11 +192,11 @@ input.onButtonPressed(Button.AB, function () {
 })
 radio.onReceivedString(function (receivedString) {
     if (receivedString == "A") {
-        plenbit.stdMotion(plenbit.StdMotions.WalkForward)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
     } else if (receivedString == "B") {
-        plenbit.stdMotion(plenbit.StdMotions.WalkRTurn)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.WalkRTurn)
     } else if (receivedString == "C") {
-        plenbit.stdMotion(plenbit.StdMotions.HighFive)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.HighFive)
     }
 })
 input.onButtonPressed(Button.B, function () {
@@ -211,12 +211,12 @@ let dis = 0
 let Adjust = 20
 basic.showIcon(IconNames.SmallDiamond)
 basic.forever(function () {
-    dis = plenbit.sensorLR(plenbit.LedLr.BButtonSide)
+    dis = plenbit_full.sensorLR(plenbit_full.LedLr.BButtonSide)
     dis = Math.map(dis, 0, 1023, 0, 330 - Adjust)
     dis = Math.map(dis, 60, 220, 50, 4)
     serial.writeValue("CM", dis)
     if (dis <= 6) {
-        plenbit.stdMotion(plenbit.StdMotions.ArmPataPata)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.ArmPataPata)
     }
     basic.pause(50)
 })
@@ -226,9 +226,9 @@ basic.forever(function () {
 
 ```blocks
 basic.showIcon(IconNames.Happy)
-plenbit.servoInitialSet()
+plenbit_full.servoInitialSet()
 input.onButtonPressed(Button.A, function () {
-    plenbit.servoWrite(11, 34)
+    plenbit_full.servoWrite(11, 34)
 })
 ```
 
@@ -236,8 +236,8 @@ input.onButtonPressed(Button.A, function () {
 
 ```blocks
 basic.forever(function () {
-    serial.writeValue("mic", plenbit.sensorLR(plenbit.LedLr.AButtonSide))
-    serial.writeValue("dis", plenbit.sensorLR(plenbit.LedLr.BButtonSide))
+    serial.writeValue("mic", plenbit_full.sensorLR(plenbit_full.LedLr.AButtonSide))
+    serial.writeValue("dis", plenbit_full.sensorLR(plenbit_full.LedLr.BButtonSide))
 })
 ```
 
@@ -257,15 +257,15 @@ basic.forever(function () {
 let loop = false
 let servoNum = 0
 let adjNum = 0
-plenbit.servoInitialSet()
+plenbit_full.servoInitialSet()
 basic.showIcon(IconNames.Happy)
 basic.forever(function () {
     if (input.buttonIsPressed(Button.A)) {
         servoAdjust()
     } else if (input.buttonIsPressed(Button.B)) {
-        plenbit.stdMotion(plenbit.StdMotions.WalkForward)
+        plenbit_full.stdMotion(plenbit_full.StdMotions.WalkForward)
     } else if (input.buttonIsPressed(Button.AB)) {
-        plenbit.resetPosition()
+        plenbit_full.resetPosition()
         basic.pause(1000)
     }
 })
@@ -276,16 +276,16 @@ function servoAdjust () {
     loop = true
     while (loop) {
         if (input.buttonIsPressed(Button.AB)) {
-            plenbit.savePositon(servoNum, adjNum)
+            plenbit_full.savePositon(servoNum, adjNum)
             servoNum += 1
             adjNum = 0
             basic.showNumber(servoNum)
         } else if (input.buttonIsPressed(Button.A)) {
             adjNum += 1
-            adjNum = plenbit.servoAdjust(servoNum, adjNum)
+            adjNum = plenbit_full.servoAdjust(servoNum, adjNum)
         } else if (input.buttonIsPressed(Button.B)) {
             adjNum += -1
-            adjNum = plenbit.servoAdjust(servoNum, adjNum)
+            adjNum = plenbit_full.servoAdjust(servoNum, adjNum)
         } else if (servoNum > 7) {
             basic.showIcon(IconNames.Happy)
             basic.pause(2000)
@@ -299,7 +299,7 @@ function servoAdjust () {
 ## Other guides
 
 Programming guide here
-https://plen.jp/wp/plenbit/
+https://plen.jp/wp/plenbit_full/
 
 ## License
 
@@ -309,5 +309,5 @@ MIT
 
 * for PXT/microbit
 ```package
-plenbit=github:plenprojectcompany/pxt-PLENbit
+plenbit_full=github:plenprojectcompany/pxt-plenbit_full
 ```
