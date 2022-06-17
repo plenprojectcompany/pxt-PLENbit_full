@@ -5,7 +5,7 @@
 PLEN:bit full is a full-sized robot of PLEN:bit, which is a small humanoid robot with movable arms and legs. Anyone can easily use PLEN:bit series through programing and onboard sensors.
 
 Please refer to this page about PLEN:bit series.
-https://plen.jp/plenbit_full/#manual
+https://plen.jp/plenbit/#manual
 
 https://makecode.microbit.org/pkg/plenprojectcompany/pxt-plenbit_full
 
